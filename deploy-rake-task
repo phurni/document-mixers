@@ -1,0 +1,22 @@
+#!/usr/bin/env sh
+# This is a single script for both Windows PowerShell and *nix shells
+# see https://stackoverflow.com/questions/39421131/is-it-possible-to-write-one-script-that-runs-in-bash-shell-and-powershell#67292076
+echo --% >/dev/null;: ' | out-null
+<#'
+
+#------------------
+# *nix shell part
+
+mkdir ~/.rake
+cp -R templates ~/.rake
+cp document.rake ~/.rake
+
+# end *nix shell part
+exit #>
+
+#------------------
+# powershell part
+
+mkdir ~/rake
+cp -R templates ~/rake
+cp document.rake ~/rake

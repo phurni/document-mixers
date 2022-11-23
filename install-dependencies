@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+
+# install required ruby gems
+gem install -N --conservative rake
+gem install -N --conservative kramdown
+gem install -N --conservative kramdown-parser-gfm
+
+# install nodejs modules but globally (reason for not using package.json)
+npm install -g puppeteer
+npm install -g puppeteer-report
