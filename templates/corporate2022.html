@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8">
+    <%
+      require 'base64'
+      options = @converter.options
+      title_solution = if options[:reveal_solution]
+        options[:reveal_solution] =~ /^(true|yes|on|1)$/ ? "Corrigé" : options[:reveal_solution]
+      end
+      template_dirname = File.dirname(options[:template])
+      logo_pathname = File.join(template_dirname, options[:logo_filename]) if options[:logo_filename]
+      page_margins = Array(options[:margin] || ['7mm', '18mm']) * 2
+    %>
+    <title><%= [options[:banner], title_solution, options[:title]].compact.join(' - ') %></title>
+    <meta name="generator" content="kramdown <%= ::Kramdown::VERSION %>" />
+
+    <% if author = options[:author] %>
+      <meta name="author" content="<%= ERB::Util.html_escape(Array(author).join(', ')) %>">
+    <% end %>
+
+    <style media="all">
+      <%= File.read(File.join(template_dirname, "github-markdown.css")) %>
+    </style>
+    <style media="all">
+      <%= File.read(File.join(template_dirname, "pygments-github.css")) %>
+    </style>
+    <style media="all">
+      <%= File.read(File.join(template_dirname, "latinmodern-sans-embedded.css")) %>
+    </style>
+    <style media="all">
+      <%= File.read(File.join(template_dirname, "creativecommons-font-embedded.css")) %>
+    </style>
+    <style media="all">
+      body {
+        padding: 0;
+        margin: 0;
+        font-family: "Latin Modern Sans", "Noto Sans", "Helvetica Neue", Helvetica, Arial, sans-serif, cc-chars;
+      }
+
+      ._body, #header, #footer {
+        margin: 0 <%= page_margins[1] %> 0 <%= page_margins[3] %>;
+      }
+
+      .markdown-body {
+        font-family: inherit;
+        font-size: <%= options[:fontsize] || '12pt' %>;
+        line-height: 1.25;
+        color: black;
+      }
+      .markdown-body:after,
+      .markdown-body:before {
+        display: none;
+      }
+      /* markdown-body corrections */
+      .markdown-body dl dd {
+        padding-right: 0;
+      }
+      .markdown-body dl dt {
+        margin-bottom: 0.25em;
+      }
+      .markdown-body p {
+        text-align: justify;
+      }
+      .markdown-body ol ol, .markdown-body ol ul, .markdown-body ul ol, .markdown-body ul ul {
+        margin-top: 0.25em;
+      }
+      .markdown-body table { /* Why did gtihub use display:block ? */
+        display: table;
+        width: auto;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      #header > ._container {
+        height: 1.6cm;
+        padding: 0 0 1.5mm 0;
+        border-bottom: solid 1px;
+        margin: <%= page_margins[0] %> 0mm 3mm 0mm;
+      }
+      #footer > ._container {
+        margin: 3mm 0mm <%= page_margins[2] %> 0mm;
+        padding: 1mm 0 0 0;
+        border-top: solid 1px;
+      }
+      ._container {
+        display: flex;
+      }
+      ._container > ._left {
+        flex: 1;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+      }
+      #header ._container > ._left {
+        flex: 0;
+      }
+      ._container > ._center {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      ._container > ._right {
+        flex: 1;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+      }
+      ._container > ._right > ._item_container {
+        text-align: right;
+      }
+      ._container ._item_container {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      ._container h1, ._container h2, ._container h3 {
+        font-size: revert;
+        font-weight: normal;
+        line-height: 1;
+        margin: 0;
+      }
+      <% if newpage_on = options[:newpage_on] %>
+        <%= Array(newpage_on).map {|selector| ".markdown #{selector}" }.join(', ') %> { page-break-before: always; }
+      <% end %>
+
+      .lines-1 { height: 2rem; }
+      .lines-2 { height: 4rem; }
+      .lines-3 { height: 6rem; }
+      .lines-4 { height: 8rem; }
+      .lines-5 { height: 10rem; }
+      .lines-6 { height: 12rem; }
+      .lines-7 { height: 14rem; }
+      .lines-8 { height: 16rem; }
+      .lines-9 { height: 18rem; }
+      .lines-10 { height: 20rem; }
+      .lines-11 { height: 22rem; }
+      .lines-12 { height: 24rem; }
+      .lines-13 { height: 26rem; }
+      .lines-14 { height: 28rem; }
+      .lines-15 { height: 30rem; }
+      .lines-16 { height: 32rem; }
+      .lines-17 { height: 34rem; }
+      .lines-18 { height: 36rem; }
+      .lines-19 { height: 38rem; }
+      .lines-20 { height: 40rem; }
+
+      .width-17 { width: 16.6%; }
+      .width-25 { width: 25%; }
+      .width-33 { width: 33.3%; }
+      .width-50 { width: 50%; }
+      .width-66 { width: 66.6%; }
+      .width-75 { width: 75%; }
+      .width-90 { width: 90%; }
+
+      .size-66 { font-size: 66.6%; }
+      .size-75 { font-size: 75%; }
+      .size-90 { font-size: 90%; }
+      .size-125 { font-size: 125%; }
+      .size-150 { font-size: 150%; }
+      .size-200 { font-size: 200%; }
+      .size-300 { font-size: 300%; }
+      .size-125w { font-size: 1.25vw; }
+      .size-150w { font-size: 1.5vw; }
+      .size-200w { font-size: 2vw; }
+      .size-300w { font-size: 3vw; }
+      .size-400w { font-size: 4vw; }
+      .size-500w { font-size: 5vw; }
+      .size-600w { font-size: 6vw; }
+
+      .block { display: block; margin: 0 auto; }
+      .center {
+        display: flex;
+        align-content: center;
+        justify-content: center;
+      }
+      .fright {
+        float: right;
+      }
+      .markdown p {
+        clear: both;
+      }
+
+      .page-break-before { page-break-before: always; }
+      .page-break-after { page-break-after: always; }
+      
+      /** page breaks **/
+      /* workaround for page-break-after: avoid from https://stackoverflow.com/questions/9238868/how-do-i-avoid-a-page-break-immediately-after-a-heading/53742871#53742871 */
+      .markdown h1, .markdown h2, .markdown h3 {
+        page-break-inside: avoid;
+      }
+      .markdown h1:after, .markdown h2:after, .markdown h3:after {
+        content: " ";
+        display: block;
+        height: 2.5cm;
+        margin-bottom: -2.5cm;
+      }
+      /* workaround end */
+      .markdown p {
+        orphans: 2;
+        widows: 2;
+      }
+      /* workaround for page-break-{before,after} that should be like this:
+      ol li:first-child, ul li:first-child {
+        break-after: avoid-page;
+      }
+      ol li:last-child, ul li:last-child {
+        break-before: avoid-page;
+      }
+      */
+      .markdown li:first-child {
+        page-break-inside: avoid;
+      }
+      .markdown li:first-child:after {
+        content: " ";
+        display: block;
+        height: 2em;
+        margin-bottom: -2em;
+      }
+      .markdown li:first-child > p {
+        margin-bottom: 0;
+      }
+      .markdown li:last-child {
+        page-break-inside: avoid;
+      }
+      .markdown li:last-child:after {
+        content: " ";
+        display: block;
+        height: 2em;
+        margin-top: -2em;
+      }
+      .markdown li:last-child > p {
+        margin-bottom: 0;
+      }
+      .markdown li:only-child:after {
+        content: none;
+      }
+      /* workaround end */
+
+      <% numbering = (options[:numbering] || 'none').to_s.strip %>
+      <%= File.read(File.join(template_dirname, "numbering-#{numbering}.css")) %>
+      <% if options[:toc_leaders] %>
+        #markdown-toc.print li a:before {
+          content: "<%= options[:toc_leaders]*100 %>";
+        }
+      <% end %>
+
+      body {
+        padding: 0 4px;
+      }
+      .markdown h1 {
+        margin-left: -4px;
+        padding-left: 4px;
+        padding-right: 4px;
+        padding-bottom: 4px;
+        background-color: #424271; /* #373768 #424271 */
+        color: white;
+        border-radius: 2px;
+        font-size: 1.5em;
+        clear: both;
+      }
+      .markdown h1.title {
+        font-size: 3em;
+        text-align: center;
+        background: none;
+        color: black;
+        border-bottom: none;
+        margin: 1em 0 !important;
+      }
+      .markdown h1.title:before {
+        counter-increment: none;
+        content: "";
+      }
+      .markdown h2 {
+        margin-left: -3px;
+        padding-left: 3px;
+        padding-right: 3px;
+        padding-bottom: 2px;
+        font-size: 1.25em;
+        background-color: #e3e3f4;
+        margin-top: 0;
+      }
+      .markdown h3 {
+        font-size: 1.15em;
+        padding-bottom: .15em;
+        border-bottom: 1px solid #c6cbd1;
+        clear: both;
+      }
+      section.for-h2 {
+        margin-top: 2em;
+      }
+
+      section.columns-2 {
+        column-count: 2;
+        column-gap: 2em;
+      }
+      section.columns-3 {
+        column-count: 3;
+        column-gap: 2em;
+      }
+      section.columns-2 section.for-h1, section.columns-3 section.for-h1,
+      section.columns-2 section.for-h2, section.columns-3 section.for-h2,
+      section.columns-2 section.for-h3, section.columns-3 section.for-h3,
+      section.columns-2 section.for-h4, section.columns-3 section.for-h4,
+      section.columns-2 section.for-h5, section.columns-3 section.for-h5,
+      section.columns-2 section.for-h6, section.columns-3 section.for-h6 {
+        display: contents;
+      }
+      h1.columns-2, h1.columns-3,
+      h2.columns-2, h2.columns-3,
+      h3.columns-2, h3.columns-3 {
+        column-span: all;
+      }
+      .columns-2 .column-break-after,
+      .columns-3 .column-break-after {
+        break-after: column;
+      }
+      .columns-2 .column-break-before,
+      .columns-3 .column-break-before {
+        break-before: column;
+      }
+
+      section.questions section {
+        page-break-inside: avoid;
+      }
+      section.questions h2 {
+        margin-left: 0;
+        padding: 0.5em 0 0.3em 0;
+        border-bottom: 1px solid #c6cbd1;
+        clear: both;
+        font-weight: normal;
+        font-size: 1em;
+        border-top: solid 2px #424271;
+        background: none;
+      }
+      .markdown section.questions h2 > strong:last-child {
+        float: right;
+        color: #ce0e0e; /* #ce0e0e #bd2323 */
+      }
+      .markdown section.questions h2:before {
+        counter-increment: h2;
+        content: counter(h2) ". ";
+        font-weight: bold;
+      }
+      /* alternate skin for questions numbers */
+      .markdown section.questions.skin-number h2 {
+        padding-top: 0;
+      }
+      .markdown section.questions.skin-number h2:before {
+        display: inline-block;
+        color: white;
+        border-bottom-right-radius: 1em;
+        padding: 0.25em 0.5em 0.2em 0.5em;
+        margin-right: 0.5em;
+        background: linear-gradient(90deg, rgba(2,0,36,1) 0, rgba(255,255,255,1) 120%, rgba(255,255,255,1) 100%);
+      }
+      .markdown section.questions.skin-number h2 > strong:last-child {
+        padding-top: 0.25em;
+      }
+      .markdown section.questions.skin-number.glued h2:before,
+      .markdown section.questions.skin-number.distinct h2:before {
+        margin-left: -0.52em; /* 0.02 more so that it overlaps a little bit the border, without a small white gap may appear */
+      }
+      /* end of alternate skins */
+
+      section.questions.glued section.for-h2 {
+        position: relative;
+        border: solid 1px #24292e;
+        margin: -1px 0 0 0; /* to make the border collapse between glued siblings */
+        padding: 0 0.5em;
+      }
+      section.questions.glued h2 {
+        position: relative;
+        border-top: none;
+        border-bottom: 1px solid #90a4b8;
+        margin-top: 0;
+      }
+      section.questions.glued h2:after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -0.5em;
+        right: -0.5em;
+      }
+      section.questions.glued h2:first-child:after {
+        border-top: none;
+      }
+
+      section.questions.distinct section.for-h2 {
+        position: relative;
+        border: solid 1px #24292e;
+        padding: 0 0.5em;
+        margin: 1em 0;
+      }
+      section.questions.distinct h2 {
+        position: relative;
+        border-top: none;
+        border-bottom: 1px solid #90a4b8;
+        margin-top: 0;
+      }
+      section.questions.distinct h2:after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -0.5em;
+        right: -0.5em;
+      }
+
+      section.questions.vertical h2 {
+        border-bottom: none;
+        margin-bottom: 0;
+      }
+      section.questions.vertical > div {
+        width: 40%;
+        border-right: solid 1px #24292e;
+        margin-top: -2.6em;
+        margin-bottom: -16px;
+        padding-top: 3em;
+      }
+
+      #header span.solution {
+        color: #ce0e0e;
+      }
+      pre.solution {
+        color: #ce0e0e;
+        background-color: #fafbfd;
+        padding: 8px;
+      }
+      pre.solution code {
+        font-size: 85%;
+      }
+
+      figure.quote {
+        line-height: 1.5;
+        margin: 2em auto;
+        padding: 2.5em 2.5em 1em 2.5em;
+        border: 0.2em solid #424271;
+        position: relative;
+      }
+      figure.quote::before {
+        font-size: 3em;
+        content: "❝";
+        color: #e08;
+        position: absolute;
+        top: -0.2em;
+        left: -0.1em;
+        background: white;
+        padding: 0 0.25em 0 0;
+      }
+      figure.quote::after {
+        font-size: 3em;
+        content: "❞";
+        color: #e08;
+        position: absolute;
+        bottom: -0.1em;
+        right: -0.1em;
+        background: white;
+        padding: 0 0 0 0.25em;
+      }
+      figure.quote blockquote {
+        font-size: 2em;
+        padding: 0;
+        border-left: none;
+        color: inherit;
+      }
+      figure.quote figcaption p {
+        text-align: right;
+      }
+      figure.quote figcaption a::after {
+        content: attr(href);
+        color: #888;
+        font-size: 0.7em;
+        display: block;
+      }
+
+      .markdown-body table.memory-cells tr,
+      .markdown-body table.memory-cells th,
+      .markdown-body table.memory-cells td {
+        border: none;
+      }
+      .markdown-body table.memory-cells tr:nth-child(2n) {
+        background-color: inherit;
+      }
+      table.memory-cells td:nth-child(2n) {
+        border: 1px solid #c6cbd1;
+      }
+      .markdown-body table.memory-cells tbody tr:first-child td:nth-child(2n) {
+        border-top: none;
+      }
+      .markdown-body table.memory-cells tbody tr:last-child td:nth-child(2n) {
+        border-bottom: none;
+      }
+
+      .markdown-body a[href^="http"].show-link::after {
+        content: attr(href);
+        color: #888;
+        font-size: 0.7em;
+        display: block;
+      }
+
+    </style>
+
+    <script>
+      // Called when generating PDF. 
+      // @param array<object> destinations, contains all internal document links as:
+      //                      Array of {destination: string, page: number} objects.
+      //                      `destination` is the link id, `page` is the printed page number of the target.
+      function handleDestinations(destinations) {
+        const toc_root = document.getElementById('markdown-toc');
+        if (!toc_root) return;
+
+        toc_root.classList.add('print');
+        for (const anchor of toc_root.querySelectorAll("li > a")) {
+          const target = anchor.getAttribute("href").substr(1);
+          const destination = destinations.find(function(item) { return item.destination == target; }) || {page: '&nbsp;'} ;
+          anchor.innerHTML = "<span>"+anchor.text+"</span><span>"+destination.page+"</span>";
+        }
+      }
+
+      function split_vertical_questions(content_root) {
+        for (const question of content_root.querySelectorAll("div.questions.vertical")) {
+          const range = document.createRange();
+          range.selectNodeContents(question);
+          range.setStart(question, 1);
+          range.surroundContents(document.createElement('div'));
+        }
+      }
+
+      function find_last_sibling_before(starting_node, end_selector) {
+        let current_node = starting_node;
+        let previous_node = null;
+        while (current_node) {
+          if (current_node.matches(end_selector)) return previous_node;
+          previous_node = current_node;
+          current_node = current_node.nextElementSibling;
+        }
+        return previous_node;
+      }
+      function wrap_section(content_root, start_selector, end_selector) {
+        const section_class = "for-" + start_selector; // so that we can use CSS to style, until :has selector adoption
+        for (const mark of content_root.querySelectorAll(start_selector)) {
+          const classes = mark.className;
+          const end_element = find_last_sibling_before(mark.nextElementSibling, end_selector);
+          if (end_element) {
+            const range = document.createRange();
+            range.setStartBefore(mark);
+            range.setEndAfter(end_element);
+            const enclosing = document.createElement('section');
+            enclosing.className = classes + ' ' + section_class;
+            range.surroundContents(enclosing);
+          }
+        }
+      }
+
+      <% if options[:hide_header_on_page] %>
+      function toggle_header_visibility(element) {
+        const pageNumberElement = element.getElementsByClassName('pageNumber')[0];
+        const page = parseInt(pageNumberElement.textContent, 10);
+
+        if (<%= options[:hide_header_on_page] %>) {
+          element.style.visibility = 'hidden';
+        }
+      }
+      <% end %>
+      <% if options[:hide_footer_on_page] %>
+      function toggle_footer_visibility(element) {
+        const pageNumberElement = element.getElementsByClassName('pageNumber')[0];
+        const page = parseInt(pageNumberElement.textContent, 10);
+
+        if (<%= options[:hide_footer_on_page] %>) {
+          element.style.visibility = 'hidden';
+        }
+      }
+      <% end %>
+
+      document.addEventListener('DOMContentLoaded', function() {
+        const content_root = document.querySelector("._content");
+
+        wrap_section(content_root, 'h6', 'h6,h5,h4,h3,h2,h1');
+        wrap_section(content_root, 'h5', 'h5,h4,h3,h2,h1');
+        wrap_section(content_root, 'h4', 'h4,h3,h2,h1');
+        wrap_section(content_root, 'h3', 'h3,h2,h1');
+        wrap_section(content_root, 'h2', 'h2,h1');
+        wrap_section(content_root, 'h1', 'h1');
+        //split_vertical_questions(content_root);
+      }, false);
+    </script>
+  </head>
+  <body>
+    <div id="header" <%= 'onchange="toggle_header_visibility(this)"' if options[:hide_header_on_page] %>>
+      <span style="display: none" class="pageNumber"></span>
+      <div class="_container">
+        <div class="_left"><img src="data:image/png;base64,<%= logo_pathname ? Base64.strict_encode64(File.read(logo_pathname, mode: 'rb')) : 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=' %>" style="height: 1.6cm"></div>
+        <div class="_right">
+          <div class="_item_container">
+            <% header_title = title_solution ? "<span class='solution'>#{title_solution}</span> - #{options[:title]}" : options[:title] %>
+            <% if options[:banner] %>
+              <h1><%= options[:banner] %></h1>
+              <h2><%= header_title %></h2>
+            <% else %>
+              <h1><%= header_title %></h1>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="_body">
+      <div class="_content markdown-body markdown">
+        <%= @body %>
+      </div>
+    </div>
+
+    <div id="footer" <%= 'onchange="toggle_footer_visibility(this)"' if options[:hide_footer_on_page] %>>
+      <span style="display: none" class="pageNumber"></span>
+      <div class="_container">
+        <div class="_left"><%= options[:signature] %></div>
+        <div class="_center"><%= Array(options[:date]).join(', ') if options[:date] %></div>
+        <div class="_right"><span class="pageNumber"></span> / <span class="totalPages"></span></div>
+      </div>
+    </div>
+  </body>
+</html>

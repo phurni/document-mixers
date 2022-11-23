@@ -1,0 +1,32 @@
+# corporate2022
+
+This template generates an embedded HTML file containing all the required dependencies.
+That includes the complete CSS, the custom fonts and the logo image if used.
+The only external files are those from your own sources markup.
+
+## meta data
+
+ variable name       | default  | purpose
+---------------------|----------|-----------------------------------------
+ title               |          | Title on the page header
+ banner              |          | Banner over the title on the page header
+ author              |          | Author name put in the document meta data
+ signature           |          | Placed on the left of the footer
+ date                |          | Placed in the middle of the footer
+ margin              | 7mm 18mm | Specified as an array [top, left, bottom, right]
+ logo_filename       |          | Placed on the right of the page header
+ font_size           | 12pt     | The body font size, all others are relative to it.
+ newpage_on          |          | CSS selector to issue a page-break-before
+ numbering           | none     | Headings numbering scheme, choose from: [none, regular]
+ toc_leaders         | . . . .  | Table of content leaders (will be repeated)
+ hide_header_on_page |          | JS predicate using the `page` variable, true for 'hide'
+ hide_footer_on_page |          | JS predicate using the `page` variable, true for 'hide'
+ reveal_solution     |          | When set, comments will be revealed as code blocks.
+                     |          | Any of (true,yes,on,1) will set the flag. You may also pass
+                     | Corrigé  | a string to enable it, the string will be the title prefix.
+
+### examples
+
+newpage_on: h1:not(.title)
+hide_header_on_page: "page == 1"
+hide_footer_on_page: "page == 1 || (page % 2 == 0)"

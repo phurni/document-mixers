@@ -1,0 +1,109 @@
+.markdown    {counter-reset: h1}
+.markdown h1 {counter-reset: h2}
+.markdown h2 {counter-reset: h3}
+.markdown h3 {counter-reset: h4}
+.markdown h4 {counter-reset: h5}
+.markdown h5 {counter-reset: h6}
+
+.markdown h1:before {counter-increment: h1; content: counter(h1) ". "}
+.markdown h2:before {counter-increment: h2; content: counter(h1) "." counter(h2) " "}
+.markdown h3:before {counter-increment: h3; content: counter(h1) "." counter(h2) "." counter(h3) " "}
+.markdown h4:before {counter-increment: h4; content: counter(h1) "." counter(h2) "." counter(h3) "." counter(h4) " "}
+.markdown h5:before {counter-increment: h5; content: counter(h1) "." counter(h2) "." counter(h3) "." counter(h4) "." counter(h5) " "}
+.markdown h6:before {counter-increment: h6; content: counter(h1) "." counter(h2) "." counter(h3) "." counter(h4) "." counter(h5) "." counter(h6) " "}
+
+.markdown section.numbering-none h1:before,
+.markdown section.numbering-none h2:before,
+.markdown section.numbering-none h3:before,
+.markdown section.numbering-none h4:before,
+.markdown section.numbering-none h5:before,
+.markdown section.numbering-none h6:before {
+  content: ""; counter-increment: none
+}
+
+.markdown h1.toc-title {
+  font-size: 2em;
+  text-align: center;
+  background: none;
+  color: black;
+  border-bottom: none;
+  /*margin: 1em 0 !important;*/
+}
+.markdown h1.toc-title:before {
+  counter-increment: none;
+  content: "";
+}
+
+/* TOC styles */
+ol#markdown-toc, #markdown-toc ol {
+  counter-reset: section;
+  list-style-type: none;
+}
+ol#markdown-toc > li {
+  font-weight: bold;
+  margin-bottom: 1em;
+}
+ol#markdown-toc li ol {
+  font-weight: normal;
+}
+ol#markdown-toc li:before {
+  counter-increment: section;
+  content: counters(section, ".") ". ";
+}
+
+ol#markdown-toc {
+  padding-left: 0;
+}
+ol#markdown-toc li:before {
+  display: inline-block;
+  padding-right: 0.33em;
+  min-width: 2em;
+}
+#markdown-toc li ol {
+  padding-left: 2.33em;
+}
+
+#markdown-toc li ol li:before {
+  min-width: 2.66em;
+}
+#markdown-toc li ol li ol {
+  padding-left: 3em;
+}
+
+/* PDF TOC styles addons. Adapted from https://www.w3.org/Style/Examples/007/leaders.en.html */
+ol#markdown-toc.print, #markdown-toc.print ol, ul#markdown-toc.print, #markdown-toc.print ul {
+  overflow-x: hidden;
+}
+#markdown-toc.print li:before {
+  background: white;
+}
+
+ol#markdown-toc {
+  position: relative;
+}
+#markdown-toc.print li a:before {
+  z-index: -2;
+  position: absolute;
+  right: 0;
+  width: 87%;
+  white-space: nowrap;
+  font-weight: normal;
+  content: ". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ";
+}
+#markdown-toc.print li a {
+  background: white;
+}
+
+#markdown-toc.print li a {
+  text-decoration: none;
+  color: inherit;
+}
+#markdown-toc.print li a span:first-child {
+  background: white;
+  padding-right: 0.33em;
+}
+#markdown-toc.print li a span + span {
+  background: white;
+  padding-left: 1em;
+  float: right;
+}

@@ -1,0 +1,69 @@
+.markdown section.numbering-regular    {counter-reset: h1}
+.markdown section.numbering-regular h1 {counter-reset: h2}
+.markdown section.numbering-regular h2 {counter-reset: h3}
+.markdown section.numbering-regular h3 {counter-reset: h4}
+.markdown section.numbering-regular h4 {counter-reset: h5}
+.markdown section.numbering-regular h5 {counter-reset: h6}
+
+.markdown section.numbering-regular h1:before {counter-increment: h1; content: counter(h1) ". "}
+.markdown section.numbering-regular h2:before {counter-increment: h2; content: counter(h1) "." counter(h2) " "}
+.markdown section.numbering-regular h3:before {counter-increment: h3; content: counter(h1) "." counter(h2) "." counter(h3) " "}
+.markdown section.numbering-regular h4:before {counter-increment: h4; content: counter(h1) "." counter(h2) "." counter(h3) "." counter(h4) " "}
+.markdown section.numbering-regular h5:before {counter-increment: h5; content: counter(h1) "." counter(h2) "." counter(h3) "." counter(h4) "." counter(h5) " "}
+.markdown section.numbering-regular h6:before {counter-increment: h6; content: counter(h1) "." counter(h2) "." counter(h3) "." counter(h4) "." counter(h5) "." counter(h6) " "}
+
+/*
+.markdown section.numbering-regular section.numbering-none h1:before,
+.markdown section.numbering-regular section.numbering-none h2:before,
+.markdown section.numbering-regular section.numbering-none h3:before,
+.markdown section.numbering-regular section.numbering-none h4:before,
+.markdown section.numbering-regular section.numbering-none h5:before,
+.markdown section.numbering-regular section.numbering-none h6:before {
+  content: ""; counter-increment: none
+}
+*/
+.markdown section.numbering-none h1:before,
+.markdown section.numbering-none h2:before,
+.markdown section.numbering-none h3:before,
+.markdown section.numbering-none h4:before,
+.markdown section.numbering-none h5:before,
+.markdown section.numbering-none h6:before {
+  content: ""; counter-increment: none
+}
+
+/***************************************************/
+
+.markdown, .markdown section.for-h1.numbering-below.numbering-reset {counter-reset: h2b}
+.markdown section.for-h1.numbering-below h2 {counter-reset: h3b}
+.markdown section.for-h1.numbering-below h3 {counter-reset: h4b}
+.markdown section.for-h1.numbering-below h4 {counter-reset: h5b}
+.markdown section.for-h1.numbering-below h5 {counter-reset: h6b}
+
+.markdown section.for-h1.numbering-below h2:before {counter-increment: h2b; content: counter(h2b) ". "}
+.markdown section.for-h1.numbering-below h3:before {counter-increment: h3b; content: counter(h2b) "." counter(h3b) " "}
+.markdown section.for-h1.numbering-below h4:before {counter-increment: h4b; content: counter(h2b) "." counter(h3b) "." counter(h4b) " "}
+.markdown section.for-h1.numbering-below h5:before {counter-increment: h5b; content: counter(h2b) "." counter(h3b) "." counter(h4b) "."  counter(h5b) " "}
+.markdown section.for-h1.numbering-below h6:before {counter-increment: h6b; content: counter(h2b) "." counter(h3b) "." counter(h4b) "."  counter(h5b) "." counter(h6b) " "}
+
+/***************************************************/
+
+.markdown section.for-h2.numbering-below h2 {counter-reset: h3b}
+.markdown section.for-h2.numbering-below h3 {counter-reset: h4b}
+.markdown section.for-h2.numbering-below h4 {counter-reset: h5b}
+.markdown section.for-h2.numbering-below h5 {counter-reset: h6b}
+
+.markdown section.for-h2.numbering-below h3:before {counter-increment: h3b; content: counter(h3b) ". "}
+.markdown section.for-h2.numbering-below h4:before {counter-increment: h4b; content: counter(h3b) "." counter(h4b) " "}
+.markdown section.for-h2.numbering-below h5:before {counter-increment: h5b; content: counter(h3b) "." counter(h4b) "."  counter(h5b) " "}
+.markdown section.for-h2.numbering-below h6:before {counter-increment: h6b; content: counter(h3b) "." counter(h4b) "."  counter(h5b) "." counter(h6b) " "}
+
+/***************************************************/
+
+.markdown section.numbering-below section.numbering-none h1:before,
+.markdown section.numbering-below section.numbering-none h2:before,
+.markdown section.numbering-below section.numbering-none h3:before,
+.markdown section.numbering-below section.numbering-none h4:before,
+.markdown section.numbering-below section.numbering-none h5:before,
+.markdown section.numbering-below section.numbering-none h6:before {
+  content: ""; counter-increment: none
+}
