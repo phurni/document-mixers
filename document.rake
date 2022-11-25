@@ -1,5 +1,15 @@
 # encoding: UTF-8
 
+def kramdown_convert_mermaid_to_div(node, meta_data)
+  if node.type == :codeblock && node.options[:lang] == 'mermaid'
+    node.type = :raw
+    node.value = %(<div class="mermaid">#{node.value}</div>\n)
+    meta_data[:mermaid] = true
+  else
+    node.children.each {|child| kramdown_convert_mermaid_to_div(child, meta_data) }
+  end
+end
+
 def kramdown_reveal_solution(node)
   children = node.children.dup
   index = children.length-1
@@ -198,6 +208,7 @@ namespace :document do
       File.open(output_filename, 'w') do |file|
         document = Kramdown::Document.new(source_content, meta_data)
         kramdown_reveal_solution(document.root) if reveal_solution
+        kramdown_convert_mermaid_to_div(document.root, meta_data)
         kramdown_erase_comments(document.root)
         kramdown_set_no_toc_for_numbering_none(document.root.children)
         file.write(document.send("to_#{format}"))

@@ -611,6 +611,12 @@
       <div class="_content markdown-body markdown">
         <%= @body %>
       </div>
+      <% if options[:mermaid] %>
+        <script>
+          <%= File.read(File.join(template_dirname, "mermaid.min.js")) %>
+          mermaid.initialize({ startOnLoad: true });
+        </script>
+      <% end %>
     </div>
 
     <div id="footer" <%= 'onchange="toggle_footer_visibility(this)"' if options[:hide_footer_on_page] %>>
