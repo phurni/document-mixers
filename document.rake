@@ -123,7 +123,8 @@ namespace :document do
         const report = require("puppeteer-report");
         const createPdf = async() => {
           const browser = await puppeteer.launch({
-            args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
+            args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage", "--font-render-hinting=none"],
+            // for '--font-render-hinting=none' see https://github.com/puppeteer/puppeteer/issues/4177
           });
           try {
             await report.pdf(browser, "#{escape_js_string(input_path)}", {
