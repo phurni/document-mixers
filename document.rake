@@ -177,15 +177,18 @@ namespace :document do
       Meta data are gathered from several sources listed below by reverse order of precedence:
       - YAML file found in the same directory as the template with the same basename but ending with .yml
       - YAML prefix of the source files (processed one after another)
-      - Extra command line arguments
+      - YAML content of the `meta` command line arguments (may be specified multiple times)
     EOD
     task :kramdown do
+      meta_from_cli = ARGV.grep(/^meta=(.*)/) { Regexp.last_match(1) }
+      ARGV.reject! {|arg| arg.start_with?('meta=') }
+
       fail("You must pass some `sources`!") unless ENV['sources']
       sources_path = ENV['sources'].split(',').inject([]) {|memo, path| memo.concat(Dir.glob(path).sort) }
       format = ENV['format'] || 'html'
       output_filename = ENV['output'] || "#{File.basename(sources_path.first, '.*')}.#{format}"
-      reveal_solution = ENV['reveal_solution']
 
+      require 'date'
       require 'kramdown'
       require 'yaml'
       begin; require 'kramdown-parser-gfm'; rescue LoadError; end
@@ -195,6 +198,8 @@ namespace :document do
 
       # Setup base meta_data that may be updated by the following stages
       meta_data = {template: template_filename, input: 'GFM', hard_wrap: false, transliterated_header_ids: true, auto_id_prefix: '_chap_', auto_id_stripping: true}
+      meta_data['title'] = File.basename(sources_path.first, '.*')
+      meta_data['date'] = Date.today.to_s
       # Get user meta_data targeting the chosen template
       template_metadata_filename = "#{File.dirname(template_filename)}/#{File.basename(template_filename,'.*')}.yml"
       meta_data.update(YAML.load(File.read(template_metadata_filename))) if File.exists?(template_metadata_filename)
@@ -208,13 +213,13 @@ namespace :document do
         memo << content
       end
       # Add all command line arguments to meta_data, so that the template may use them
-      meta_data.update(:reveal_solution => reveal_solution)
+      meta_from_cli.each {|meta| meta_data.update(YAML.load(meta)) rescue (STDERR.puts "Ignoring invalid meta data from cli: #{meta}") }
       # Post-process some options
       meta_data[:logo_filename] = find_file_for_template(meta_data[:logo_filename]) if meta_data[:logo_filename]
       
       File.open(output_filename, 'w') do |file|
         document = Kramdown::Document.new(source_content, meta_data)
-        kramdown_reveal_solution(document.root) if reveal_solution
+        kramdown_reveal_solution(document.root) if meta_data['reveal_solution']
         kramdown_convert_mermaid_to_div(document)
         kramdown_erase_comments(document.root)
         kramdown_set_no_toc_for_numbering_none(document.root.children)
