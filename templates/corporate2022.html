@@ -81,6 +81,9 @@
         display: none;
       }
       /* markdown-body corrections */
+      .markdown-body pre, .markdown-body .highlight pre {
+        line-height: 1.18; /* target 100% by compensating the font-size of 85% (85%*118% => 100%) */
+      }
       .markdown-body dl dd {
         padding-right: 0;
       }
@@ -214,6 +217,9 @@
         display: table;
         margin: auto;
       }
+      .fleft {
+        float: left;
+      }
       .fright {
         float: right;
       }
@@ -325,6 +331,16 @@
         padding-bottom: .15em;
         border-bottom: 1px solid #c6cbd1;
         clear: both;
+      }
+      .markdown h1.simple {
+        font-size: 2em;
+        background: inherit;
+        color: inherit;
+      }
+      .markdown h2.simple {
+        font-size: 1.5em;
+        background: inherit;
+        color: inherit;
       }
       section.for-h2 {
         margin-top: 2em;
