@@ -8,8 +8,9 @@ The only external files are those from your own sources markup.
 
  variable name       | default  | purpose
 ---------------------|----------|-----------------------------------------
- title               |          | Title on the page header
+ title               | basename | Title on the page header (basename of first sources file)
  banner              |          | Banner over the title on the page header
+                     |          | Markdown may be used (only inline elements)
  author              |          | Author name put in the document meta data
  signature           |          | Placed on the left of the footer
  date                |          | Placed in the middle of the footer

@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <%
+      require 'open-uri'
       require 'base64'
       options = @converter.options
       title_solution = if options[:reveal_solution]
@@ -11,8 +12,35 @@
       template_dirname = File.dirname(options[:template])
       logo_pathname = File.join(template_dirname, options[:logo_filename]) if options[:logo_filename]
       page_margins = Array(options[:margin] || ['7mm', '18mm']) * 2
+
+      # Add-on to inline convert options content (like banner, signature, ...) from markdown to html
+      def strip_block_elements(node)
+        node.children.flat_map {|child| ::Kramdown::Element.category(child) == :block ? strip_block_elements(child) : child }
+      end
+      def embed_img_src(node)
+        if node.type == :img
+          node.attr['src'] = "data:image/png;base64," + Base64.strict_encode64(URI.open(node.attr['src'], mode: 'rb').read)
+        end
+        node.children.each {|child| embed_img_src(child) }
+      end
+      def inline_kramdown_to_html(text)
+        doc = text.is_a?(::Kramdown::Document) ? text : ::Kramdown::Document.new(text)
+        doc.root.children = strip_block_elements(doc.root)
+        embed_img_src(doc.root)
+        doc.to_html
+      end
+      def to_text_tree(node)
+        return node.value if node.type == :text
+        node.children.map {|child| to_text_tree(child) }
+      end
+
+      if banner_present = !!options[:banner]
+        banner_doc = ::Kramdown::Document.new(options[:banner])
+        banner_text = to_text_tree(banner_doc.root).join
+        banner_html = inline_kramdown_to_html(banner_doc)
+      end
     %>
-    <title><%= [options[:banner], title_solution, options[:title]].compact.join(' - ') %></title>
+    <title><%= [banner_present && banner_text, title_solution, options[:title]].compact.join(' - ') %></title>
     <meta name="generator" content="kramdown <%= ::Kramdown::VERSION %>" />
 
     <% if author = options[:author] %>
@@ -122,6 +150,10 @@
         line-height: 1;
         margin: 0;
       }
+      ._container img {
+        max-height: 100%;
+        vertical-align: text-bottom;
+      }
       <% if newpage_on = options[:newpage_on] %>
         <%= Array(newpage_on).map {|selector| ".markdown #{selector}" }.join(', ') %> { page-break-before: always; }
       <% end %>
@@ -171,10 +203,16 @@
       .size-600w { font-size: 6vw; }
 
       .block { display: block; margin: 0 auto; }
+      /* Problem when there are spans inside, the spaces around them collapses!
       .center {
         display: flex;
         align-content: center;
         justify-content: center;
+      }
+      */
+      .center {
+        display: table;
+        margin: auto;
       }
       .fright {
         float: right;
@@ -592,12 +630,12 @@
     <div id="header" <%= 'onchange="toggle_header_visibility(this)"' if options[:hide_header_on_page] %>>
       <span style="display: none" class="pageNumber"></span>
       <div class="_container">
-        <div class="_left"><img src="data:image/png;base64,<%= logo_pathname ? Base64.strict_encode64(File.read(logo_pathname, mode: 'rb')) : 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=' %>" style="height: 1.6cm"></div>
+        <div class="_left"><img src="data:image/png;base64,<%= logo_pathname ? Base64.strict_encode64(URI.open(logo_pathname, mode: 'rb').read) : 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=' %>" style="height: 1.6cm"></div>
         <div class="_right">
           <div class="_item_container">
             <% header_title = title_solution ? "<span class='solution'>#{title_solution}</span> - #{options[:title]}" : options[:title] %>
-            <% if options[:banner] %>
-              <h1><%= options[:banner] %></h1>
+            <% if banner_present %>
+              <h1 style="height: 1cm"><%= banner_html %></h1>
               <h2><%= header_title %></h2>
             <% else %>
               <h1><%= header_title %></h1>
