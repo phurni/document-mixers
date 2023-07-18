@@ -4,6 +4,7 @@
 gem install -N --conservative rake
 gem install -N --conservative kramdown
 gem install -N --conservative kramdown-parser-gfm
+gem install -N --conservative stringex
 gem install -N --version '<4' rouge
 
 # install nodejs modules but globally (reason for not using package.json)

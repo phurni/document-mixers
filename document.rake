@@ -218,11 +218,18 @@ namespace :document do
       meta_data[:logo_filename] = find_file_for_template(meta_data[:logo_filename]) if meta_data[:logo_filename]
       
       File.open(output_filename, 'w') do |file|
+        # auto_ids quirk: when GFM is the parser, it will assign header ids without respecting transliterated_header_ids. So disable auto_ids when parsing and then re-enable it for output generation
+        auto_ids_quirk = meta_data[:input] == 'GFM' && (meta_data[:auto_ids].nil? || meta_data[:auto_ids])
+
+        meta_data[:auto_ids] = false if auto_ids_quirk
         document = Kramdown::Document.new(source_content, meta_data)
         kramdown_reveal_solution(document.root) if meta_data['reveal_solution']
         kramdown_convert_mermaid_to_div(document)
         kramdown_erase_comments(document.root)
         kramdown_set_no_toc_for_numbering_none(document.root.children)
+
+        # Yes it's hacky but kramdown freezes the options in the document constructor, so hack it with instance_variable_set!
+        document.instance_variable_set(:@options, document.options.merge(auto_ids: true)) if auto_ids_quirk
         file.write(document.send("to_#{format}"))
       end
       
