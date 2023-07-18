@@ -19,7 +19,7 @@
       end
       def embed_img_src(node)
         if node.type == :img
-          node.attr['src'] = "data:image/png;base64," + Base64.strict_encode64(URI.open(node.attr['src'], mode: 'rb').read)
+          node.attr['src'] = "data:image/png;base64," + Base64.strict_encode64(URI.open(node.attr['src'], 'rb').read)
         end
         node.children.each {|child| embed_img_src(child) }
       end
@@ -646,7 +646,7 @@
     <div id="header" <%= 'onchange="toggle_header_visibility(this)"' if options[:hide_header_on_page] %>>
       <span style="display: none" class="pageNumber"></span>
       <div class="_container">
-        <div class="_left"><img src="data:image/png;base64,<%= logo_pathname ? Base64.strict_encode64(URI.open(logo_pathname, mode: 'rb').read) : 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=' %>" style="height: 1.6cm"></div>
+        <div class="_left"><img src="data:image/png;base64,<%= logo_pathname ? Base64.strict_encode64(URI.open(logo_pathname, 'rb').read) : 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=' %>" style="height: 1.6cm"></div>
         <div class="_right">
           <div class="_item_container">
             <% header_title = title_solution ? "<span class='solution'>#{title_solution}</span> - #{options[:title]}" : options[:title] %>
