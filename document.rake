@@ -74,7 +74,7 @@ def find_file_for_template(filename)
     File.join(File.join(File.dirname(__FILE__), "templates"), filename),
     File.join(File.join(File.dirname(__FILE__), "kramdown"), filename),
   ]
-  template_paths.map {|pathname| File.expand_path(pathname) }.find {|pathname| File.exists?(pathname) }
+  template_paths.map {|pathname| File.expand_path(pathname) }.find {|pathname| File.exist?(pathname) }
 end
 
 def find_standard_template(prefix, format, variants)
@@ -202,7 +202,7 @@ namespace :document do
       meta_data['date'] = Date.today.to_s
       # Get user meta_data targeting the chosen template
       template_metadata_filename = "#{File.dirname(template_filename)}/#{File.basename(template_filename,'.*')}.yml"
-      meta_data.update(YAML.load(File.read(template_metadata_filename))) if File.exists?(template_metadata_filename)
+      meta_data.update(YAML.load(File.read(template_metadata_filename))) if File.exist?(template_metadata_filename)
       # Read all the sources, strip the optional YAML metablock and use it to update meta_data, store the remaining source
       source_content = sources_path.inject('') do |memo, source|
         content = File.read(source)
@@ -274,7 +274,7 @@ namespace :document do
       format = ENV['format'] || '*'
       if template_filename = find_template(format)
         template_help_filename = "#{File.dirname(template_filename)}/#{File.basename(template_filename,'.*')}.help"
-        if File.exists?(template_help_filename)
+        if File.exist?(template_help_filename)
           puts File.read(template_help_filename)
         else
           puts "No template help (put one at #{template_help_filename})"
